@@ -25,7 +25,6 @@ const jwtStore: Record<string, TokenEntry> = {};
 type TokenRequestPayload = {
   user_id: string;
   token_expiration: number;
-  events_webhook_url: string;
 };
 
 async function createJwtToken(): Promise<string> {
@@ -42,7 +41,6 @@ async function createJwtToken(): Promise<string> {
     data: {
       user_id: userId,
       token_expiration: TOKEN_EXPIRATION_SECONDS,
-      events_webhook_url: "https://webhook.site/91094791-45f8-4681-922b-160d41ea1b5e",
     } satisfies TokenRequestPayload,
   };
   const response = await axios(requestOptions).catch((error: any) => {
