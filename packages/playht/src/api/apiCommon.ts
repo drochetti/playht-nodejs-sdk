@@ -13,10 +13,8 @@ import { PassThrough, Readable, Writable } from 'node:stream';
 import { APISettingsStore } from './APISettingsStore';
 import { generateV1Speech } from './generateV1Speech';
 import { generateV1Stream } from './generateV1Stream';
-import { generateV2Speech } from './generateV2Speech';
-import { generateV2Stream } from './generateV2Stream';
 import { textStreamToSentences } from './textStreamToSentences';
-import { generateGRpcStream } from './generateGRpcStream';
+import { generateFalStream, generateFalSpeech } from './integration/fal';
 
 export type V1ApiOptions = {
   narrationStyle?: string;
@@ -57,11 +55,9 @@ export async function commonGenerateSpeech(input: string, optionsInput?: SpeechO
     };
   } else {
     const v2Options = toV2Options(options);
-    const result = await generateV2Speech(input, options.voiceId, v2Options);
-    return {
-      audioUrl: result.url,
-      generationId: result.id,
-    };
+    // const result = await generateV2Speech(input, options.voiceId, v2Options);
+    const result = await generateFalSpeech(input, options.voiceId, v2Options);
+    return result;
   }
 }
 
@@ -85,13 +81,8 @@ export async function internalGenerateStreamFromString(
   if (options.voiceEngine === 'Standard') {
     const v1Options = toV1Options(options);
     return await generateV1Stream(input, options.voiceId, v1Options);
-  } else if (options.voiceEngine === 'PlayHT2.0' || options.voiceEngine === 'PlayHT2.0-turbo') {
-    const v2Options = toV2Options(options, true);
-    return await generateGRpcStream(input, options.voiceId, v2Options);
-  } else {
-    const v2Options = toV2Options(options, options.voiceEngine !== 'PlayHT1.0');
-    return await generateV2Stream(input, options.voiceId, v2Options);
   }
+  return await generateFalStream(input, options.voiceId, toV2Options(options, true));
 }
 
 export async function internalGenerateStreamFromInputStream(
@@ -201,7 +192,7 @@ async function audioStreamFromSentences(
   // Create a stream for promises
   const promiseStream = new Readable({
     objectMode: true,
-    read() {},
+    read() { },
   });
 
   function onError(error?: any) {

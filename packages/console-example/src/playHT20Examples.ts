@@ -7,35 +7,43 @@ export const playHT20Examples = async () => {
   console.log('PlayHT 2.0 voices');
   console.log('=================');
 
-  // Create a test stream
-  const textStream = new Readable({
-    read() {
-      this.push('You can stream ');
-      this.push('text right into ');
-      this.push('an audio stream!');
-      this.push(null); // End of data
-    },
-  });
+  // // Create a test stream
+  // const textStream = new Readable({
+  //   read() {
+  //     this.push('You can stream ');
+  //     this.push('text right into ');
+  //     this.push('an audio stream!');
+  //     this.push(null); // End of data
+  //   },
+  // });
 
-  console.log('Streaming from a stream');
+  // console.log('Streaming from a stream');
 
-  // Stream audio from text
-  const streamFromStream = await PlayHT.stream(textStream);
+  // // Stream audio from text
+  // const streamFromStream = await PlayHT.stream(textStream);
 
-  // Create a file stream
-  const fileStreamForStream = fs.createWriteStream('hello2.0-streamFromStream.mp3');
+  // // Create a file stream
+  // const fileStreamForStream = fs.createWriteStream('hello2.0-streamFromStream.mp3');
 
-  streamFromStream.pipe(fileStreamForStream);
+  // streamFromStream.pipe(fileStreamForStream);
 
-  await new Promise((resolve) => {
-    fileStreamForStream.on('finish', resolve);
-  });
+  // await new Promise((resolve) => {
+  //   fileStreamForStream.on('finish', resolve);
+  // });
 
   console.log('Streaming from a string');
 
   // Stream audio from text
   const streamFromText = await PlayHT.stream(
-    'Hi there. I am streaming from a string. So easy! I will do that again for sure. Make it a bit longer just to make sure it will work for cloning.',
+    'Hi there. I am streaming from text. So easy! I will do that again for sure. Make it a bit longer just to make sure it will work for cloning.',
+    {
+      voiceEngine: 'PlayHT2.0-turbo',
+      outputFormat: 'mp3',
+      temperature: 1.2,
+      quality: 'high',
+      emotion: 'male_fearful',
+      styleGuidance: 16,
+    }
   );
 
   // Create a file stream
@@ -57,7 +65,7 @@ export const playHT20Examples = async () => {
     voiceEngine: 'PlayHT2.0',
     voiceId: 's3://peregrine-voices/oliver_narrative2_parrot_saad/manifest.json',
     outputFormat: 'mp3',
-    temperature: 1.5,
+    temperature: 1.2,
     quality: 'high',
     speed: 0.8,
     emotion: 'male_fearful',
@@ -67,6 +75,9 @@ export const playHT20Examples = async () => {
   // Grab the generated file URL
   const { audioUrl } = generated;
   console.log('The url for the audio file is', audioUrl);
+
+  // skip cloning for now
+  return;
 
   // Load an audio file
   const fileBlob = fs.readFileSync('hello2.0-textStream.mp3');
