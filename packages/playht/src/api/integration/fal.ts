@@ -31,8 +31,8 @@ async function createJwtToken(): Promise<string> {
   const { userId, apiKey } = APISettingsStore.getSettings();
   const requestOptions: AxiosRequestConfig = {
     method: 'POST',
-    // url: 'https://fal-playht-demo-app.vercel.app/api/authorize',
-    url: 'http://localhost:3000/api/authorize',
+    // url: 'https://fal-playht-demo-app.vercel.app/api/playht/authorize',
+    url: 'http://localhost:3000/api/playht/authorize',
     headers: {
       'content-type': 'application/json',
       'authorization': `Bearer ${apiKey}`,
