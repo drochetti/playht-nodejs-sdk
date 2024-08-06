@@ -1,4 +1,5 @@
 import type { V2ApiOptions } from '../apiCommon';
+import https from 'https';
 import axios, { type AxiosRequestConfig } from 'axios';
 import { APISettingsStore } from '../APISettingsStore';
 
@@ -19,6 +20,10 @@ type TokenEntry = {
   token: string;
   expiresAt: number;
 };
+
+const streamingHttpsAgent = new https.Agent({
+  keepAlive: true,
+});
 
 const jwtStore: Record<string, TokenEntry> = {};
 
@@ -98,6 +103,7 @@ export async function generateFalStream(
       text_guidance: options?.textGuidance,
       style_guidance: options?.styleGuidance,
     },
+    httpsAgent: streamingHttpsAgent,
   };
 
   const response = await axios(streamOptions).catch((error: any) => {
